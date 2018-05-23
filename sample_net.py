@@ -86,7 +86,6 @@ for lr,n_iters in zip(args.lr,args.n_iters):
 
         trDL,teDL = load_data(args,one_hot=one_hot)
         net = load_model(args.dataset,args.arch)
-        print(net)
         #net.apply(lambda t: weights_init(t,args.gain,args.init))
 
         optimizer = torch.optim.SGD(net.parameters(),lr = lr, momentum=args.momentum)

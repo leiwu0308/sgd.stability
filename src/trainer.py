@@ -28,20 +28,22 @@ class Trainer:
             batch_size = dataloader.nsamples
 
         since = time.time()
+        global _ACC_AVG
+        global _LOSS_AVG
+        _ACC_AVG = -1
+        _LOSS_AVG = -1
         for iter_now in range(iter_start,iter_end):
-            if self.scheduler is not None:
-                self.scheduler.step()
-                current_lr = self.scheduler.get_lr()[0]
-            else:
-                current_lr = -1
-            
+            self.scheduler.step()
+            current_lr = self.scheduler.get_lr()[0]
             
             def closure():
+                global _ACC_AVG
+                global _LOSS_AVG
                 self.optimizer.zero_grad()
                 loss,acc = comp_gradient(self.model,self.ct,dataloader,batch_size)
+                _ACC_AVG = 0.9 * _ACC_AVG + 0.1 * acc if _ACC_AVG > 0 else acc
+                _LOSS_AVG = 0.9 * _LOSS_AVG + 0.1 * loss.data[0] if _LOSS_AVG > 0 else loss.data[0]
                 return loss 
-            # perform (stochastic) gradient descent
-            loss = self.optimizer.step(closure)
 
             # update information
             if iter_now%self.iter_ckpt == 0 and self.store_ckpt:
@@ -52,23 +54,19 @@ class Trainer:
                                 self.dir_ckpt,batch_size,iter_start,iter_now,iter_end
                             )
                     )
-            loss = loss.data[0]
             if iter_now%self.iter_display == 0:
                 now = time.time()
                 print('%d/%d, lr=%.2e, took %.0f seconds, trL: %.2e, trA: %.2f'%(
-                        iter_now,iter_end,current_lr,now-since,loss,-1))
+                        iter_now,iter_end,current_lr,now-since,_LOSS_AVG,_ACC_AVG))
                 since = time.time()
-            loss_mean = 0.9*loss_mean + 0.1*loss if iter_now > iter_start else loss
-            self.history.append((iter_now,loss))
-            
-            if loss_mean < tol:
-                print('achive required error')
+
+            # perform (stochastic) gradient descent
+            self.optimizer.step(closure)
+
+            if _LOSS_AVG < tol:
+                print('achive required error with loss: %.2e'%(_LOSS_AVG))
                 break
             
-        return self.history
-
-
-
 def comp_gradient(model,ct,dataloader,batch_size):
     loss,acc = 0,0
     nbatch = batch_size // dataloader.batch_size
