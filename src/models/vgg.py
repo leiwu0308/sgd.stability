@@ -60,6 +60,7 @@ cfg = {
     'A1': [16, 'M', 32, 'M', 32, 32, 'M', 64, 64, 'M', 128, 128, 'M'],
     'A2': [32, 'M', 64, 'M', 64, 64, 'M', 128, 128, 'M', 256, 256, 'M'],
     'A3': [64, 'M', 128, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M'],
+    'A4': [128, 'M', 256, 'M', 256, 256, 'M', 512, 512, 'M', 1024, 1024, 'M'],
     'B': [16, 16, 'M', 32, 32, 'M', 64, 64, 'M', 128, 128, 'M', 128, 128, 'M'],
     'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
     'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M',
@@ -74,7 +75,7 @@ def vgg11(num_classes=10):
 
 def vgg11_big(num_classes=10):
     """VGG 11-layer model (configuration "A")"""
-    return VGG(make_layers(cfg['A2']),cfg['A2'][-2],num_classes)
+    return VGG(make_layers(cfg['A1']),cfg['A1'][-2],num_classes)
 
 def vgg11_bn(num_classes):
     """VGG 11-layer model (configuration "A") with batch normalization"""

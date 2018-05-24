@@ -88,8 +88,8 @@ for lr,n_iters in zip(args.lr,args.n_iters):
         net = load_model(args.dataset,args.arch)
         #net.apply(lambda t: weights_init(t,args.gain,args.init))
 
-        optimizer = torch.optim.SGD(net.parameters(),lr = lr, momentum=args.momentum)
-        # optimizer = torch.optim.RMSprop(net.parameters(),lr = lr)
+        optimizer = torch.optim.SGD(net.parameters(),lr = lr, momentum=args.momentum,nesterov=True)
+        #optimizer = torch.optim.RMSprop(net.parameters(),lr = lr)
         scheduler = lr_scheduler.MultiStepLR(optimizer,
                                 milestones = [10000000])
         trainer = Trainer(iter_display = args.iter_display)

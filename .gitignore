@@ -322,6 +322,7 @@ TSWLatexianTemp*
 *-tags.tex
 
 experiments/
+slurm/
 data/*
 nohup.out
 *.PNG
