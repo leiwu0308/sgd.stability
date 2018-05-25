@@ -19,6 +19,7 @@ argparser.add_argument('--momentum',type=float,default=0.0)
 argparser.add_argument('--n_tries', type=int, default=1)
 argparser.add_argument('--n_iters', type=int, default=[10000],nargs='+')
 argparser.add_argument('--lr',type=float,default=[1e-1],nargs='+')
+argparser.add_argument('--decay',type=int,default=[5000000],nargs='+')
 argparser.add_argument('--batch_size', type=int,default=1000)
 argparser.add_argument('--arch', default='fnn')
 argparser.add_argument('--loss',default='mse')
@@ -30,6 +31,7 @@ argparser.add_argument('--save_model',default='')
 argparser.add_argument('--tol',type=float,default=1e-3)
 argparser.add_argument('--iter_display',type=int,default=200)
 argparser.add_argument('--nclasses',type=int,default=10)
+argparser.add_argument('--width',type=int,default=100)
 args = argparser.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"]=args.gpuid
 
@@ -85,13 +87,13 @@ for lr,n_iters in zip(args.lr,args.n_iters):
         print('==== Start of %d-th Experiment ==='%(i+1))
 
         trDL,teDL = load_data(args,one_hot=one_hot)
-        net = load_model(args.dataset,args.arch)
+        net = load_model(args.dataset,args.arch,width=args.width)
         #net.apply(lambda t: weights_init(t,args.gain,args.init))
 
-        optimizer = torch.optim.SGD(net.parameters(),lr = lr, momentum=args.momentum,nesterov=True)
+        optimizer = torch.optim.SGD(net.parameters(),lr = lr)#, momentum=args.momentum,nesterov=True)
         #optimizer = torch.optim.RMSprop(net.parameters(),lr = lr)
         scheduler = lr_scheduler.MultiStepLR(optimizer,
-                                milestones = [10000000])
+                                milestones = args.decay)
         trainer = Trainer(iter_display = args.iter_display)
         trainer.set_model(net,ct,optimizer,scheduler)
         res=trainer.train_sgd(

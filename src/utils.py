@@ -55,10 +55,10 @@ def load_data(args,stop=False,one_hot=False,root=None):
         raise ValueError('The specified dataset has not been implemented')
     return trDL,teDL
 
-def load_model(dataset,arch=None):
+def load_model(dataset,arch=None,width=500):
     if dataset == 'fashionmnist':
         if arch is None or arch == 'fnn':
-            return resfnn(depth=3,width=500).cuda()
+            return resfnn(depth=2,width=width).cuda()
         elif arch == 'lenet':
             return lenet().cuda()
         else:

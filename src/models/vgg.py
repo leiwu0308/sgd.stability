@@ -75,7 +75,7 @@ def vgg11(num_classes=10):
 
 def vgg11_big(num_classes=10):
     """VGG 11-layer model (configuration "A")"""
-    return VGG(make_layers(cfg['A1']),cfg['A1'][-2],num_classes)
+    return VGG(make_layers(cfg['A3']),cfg['A3'][-2],num_classes)
 
 def vgg11_bn(num_classes):
     """VGG 11-layer model (configuration "A") with batch normalization"""
