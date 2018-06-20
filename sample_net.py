@@ -7,35 +7,12 @@ from copy import deepcopy
 import torch
 from torch.optim import lr_scheduler
 
-from src.utils import load_model, load_data
+from src.utils import load_model, load_data, parse_args
 from src.trainer import Trainer
 from src.analysis import eval_accuracy
 
-argparser = argparse.ArgumentParser(description=__doc__)
-argparser.add_argument('--dataset',default='fashionmnist')
-argparser.add_argument('--save_dir', default='experiments/tmp/')
-argparser.add_argument('--gpuid',default='0,')
-argparser.add_argument('--momentum',type=float,default=0.0)
-argparser.add_argument('--n_tries', type=int, default=1)
-argparser.add_argument('--n_iters', type=int, default=[10000],nargs='+')
-argparser.add_argument('--lr',type=float,default=[1e-1],nargs='+')
-argparser.add_argument('--decay',type=int,default=[5000000],nargs='+')
-argparser.add_argument('--batch_size', type=int,default=1000)
-argparser.add_argument('--arch', default='fnn')
-argparser.add_argument('--loss',default='mse')
-argparser.add_argument('--num_wrong_samples',type=int,default=0)
-argparser.add_argument('--num_clean_samples',type=int,default=1000)
-argparser.add_argument('--gain', type=float,default=1)
-argparser.add_argument('--init', default='uniform')
-argparser.add_argument('--save_model',default='')
-argparser.add_argument('--tol',type=float,default=1e-3)
-argparser.add_argument('--iter_display',type=int,default=200)
-argparser.add_argument('--nclasses',type=int,default=10)
-argparser.add_argument('--width',type=int,default=100)
-argparser.add_argument('--depth',type=int,default=2)
-args = argparser.parse_args()
+args = parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"]=args.gpuid
-
 
 def weights_init(m,gain=1,init_type='uniform'):
     class_name = m.__class__.__name__
@@ -46,29 +23,6 @@ def weights_init(m,gain=1,init_type='uniform'):
         else:
             m.weight.data.normal_(0,gain*stddev)
 
-# Update Parameters
-args_fashionmnist = {
-    'num_clean_samples': 1000,
-    'num_wrong_samples': 0,
-    'load_size': 2000,
-    'dataset': 'fashionmnist'
-}
-
-args_cifar10= {
-    'num_clean_samples': 50000,
-    'num_wrong_samples': 0,
-    'arch': 'resnet',
-    'load_size': 400
-}
-
-if args.dataset == 'fashionmnist':
-    args_default = args_fashionmnist
-else:
-    args_default = args_cifar10
-args = vars(args)
-args_default.update(args)
-print(json.dumps(args_default,indent=2))
-args = Bunch(args_default)
 
 if args.loss == 'mse':
     ct = torch.nn.MSELoss().cuda()

@@ -1,5 +1,4 @@
 import argparse
-import os
 import re
 import json
 from bunch import Bunch
@@ -108,3 +107,66 @@ def process_config(json_file):
     config.data_dir = os.path.join("experiments",
                                    config.exp_name)
     return config
+
+def parse_args():
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument('--save_dir', default='experiments/tmp/')
+    argparser.add_argument('--save_model', default='')
+    argparser.add_argument('--gpuid', default='0,')
+    argparser.add_argument('--iter_display',type=int,default=200)
+    argparser.add_argument('--n_tries', type=int, default=1)
+
+    argparser.add_argument('--dataset', default='fashionmnist')
+    argparser.add_argument('--nclasses', type=int, default=10)
+    argparser.add_argument('--num_wrong_samples', type=int, default=0)
+    argparser.add_argument('--num_clean_samples', type=int, default=1000)
+    argparser.add_argument('--batch_size', type=int, default=1000)
+
+    argparser.add_argument('--arch', default='fnn')
+    argparser.add_argument('--width', type=int, default=500)
+    argparser.add_argument('--depth', type=int, default=2)
+    argparser.add_argument('--loss', default='mse')
+
+    argparser.add_argument('--momentum',type=float,default=0.0)
+    argparser.add_argument('--lr',type=float,default=[1e-1],nargs='+')
+    argparser.add_argument('--n_iters', type=int, default=[10000],nargs='+')
+    argparser.add_argument('--decay',type=int,default=[5000000],nargs='+')
+    argparser.add_argument('--init', default='uniform')
+    argparser.add_argument('--gain', type=float,default=1)
+    argparser.add_argument('--tol',type=float,default=1e-3)
+
+    argparser.add_argument('--nonuniformity', action='store_true',
+                help='If True, compute the non-uniformity')
+    argparser.add_argument('--model', default='', help='pickle files of the model')
+    argparser.add_argument('--save_res',default='',help='file name to store results')
+    args = argparser.parse_args()
+    if args.batch_size == -1:
+        args.batch_size = args.num_clean_samples + args.num_wrong_samples
+
+
+    # Update Parameters
+    args_fashionmnist = {
+        'num_clean_samples': 1000,
+        'num_wrong_samples': 0,
+        'arch': 'fnn',
+        'load_size': 2000,
+    }
+
+    args_cifar10= {
+        'num_clean_samples': 50000,
+        'num_wrong_samples': 0,
+        'arch': 'resnet',
+        'load_size': 400
+    }
+
+    if args.dataset == 'fashionmnist':
+        args_default = args_fashionmnist
+    else:
+        args_default = args_cifar10
+    args = vars(args)
+    args_default.update(args)
+
+    print('===> CONFIGS:')
+    print(json.dumps(args_default,indent=2))
+    args = Bunch(args_default)
+    return args

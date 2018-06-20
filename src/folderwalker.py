@@ -55,15 +55,18 @@ class FolderWalker:
 
 
 
-def scan(net,ct,trDL,teDL,dirname,niters=20,tol=1e-3,verbose=True,variance_comp=True,niters_var=-1):
+def scan(net,ct,trDL,teDL,dirname,
+            niters=20,tol=1e-3,verbose=True,nonuniformity=True):
     count = 0
     res = []
     print(
         '--------------------------------------------------------------------------------------------------')
-    print('     exp  time s\t lr\t batch_size \t | sharpnes\t diversity\t | loss    \t accuracy   weight_norm')
+    print('     exp  time s lr\t batch_size | sharpnes\t diversity\t | loss    \t accuracy   weight_norm')
     print(
         '--------------------------------------------------------------------------------------------------')
     for filename in os.listdir(dirname):
+        if not filename.endswith('pkl'):
+            continue
         time_start = time.time()
         path_abs = os.path.join(dirname,filename)
         if os.path.isdir(path_abs):
@@ -78,12 +81,10 @@ def scan(net,ct,trDL,teDL,dirname,niters=20,tol=1e-3,verbose=True,variance_comp=
 
         teL,teA,_ = eval_accuracy(net, ct, teDL)
         H_mu = eigen_hessian(net, ct, trDL, tol=tol, niters=niters)
-        if variance_comp:
-            if niters_var == -1:
-                niters_var = niters
-            V_mu = eigen_variance(net, ct, trDL, tol=tol ,niters=niters_var)
+        if nonuniformity:
+            V_mu = eigen_variance(net, ct, trDL, tol=tol ,niters=niters)
         else: 
-            V_mu = 0
+            V_mu = -1
         w_norm = weight_norm(net)
 
         res.append([lr,batch_size,H_mu,sqrt(V_mu),teL,teA,w_norm])
