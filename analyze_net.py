@@ -17,7 +17,7 @@ def main():
     print('# of parameters',num_parameters(net))
 
     res = scan(net,ct,trDL,teDL,args.model,verbose=True,
-                    niters=5,nonuniformity=args.nonuniformity)
+                    niters=50,nonuniformity=args.nonuniformity)
     with open(args.save_res,'wb') as f:
         pickle.dump(res,f)
 

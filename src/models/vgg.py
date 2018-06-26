@@ -20,9 +20,9 @@ class VGG(nn.Module):
         super(VGG, self).__init__()
         self.features = features
         self.classifier = nn.Sequential(
-            nn.Linear(feature_size, 512),
+            nn.Linear(feature_size, 128),
             nn.ReLU(True),
-            nn.Linear(512,num_classes),
+            nn.Linear(128,num_classes),
         )
          # Initialize weights
         for m in self.modules():
@@ -70,7 +70,7 @@ cfg = {
 
 def vgg11(num_classes=10):
     """VGG 11-layer model (configuration "A")"""
-    return VGG(make_layers(cfg['A']),num_classes)
+    return VGG(make_layers(cfg['A']),feature_size=64,num_classes=num_classes)
 
 
 def vgg11_big(num_classes=10):

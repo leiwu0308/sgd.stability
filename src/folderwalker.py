@@ -76,6 +76,9 @@ def scan(net,ct,trDL,teDL,dirname,
         teA = float(str[1][3:])
         lr = float(str[2][2:])
         batch_size = int(str[3][2:])
+        momentum = float(str[4][8:])
+        print(path_abs)
+        print(net)
 
         net.load_state_dict(torch.load(path_abs))
 
@@ -87,10 +90,10 @@ def scan(net,ct,trDL,teDL,dirname,
             V_mu = -1
         w_norm = weight_norm(net)
 
-        res.append([lr,batch_size,H_mu,sqrt(V_mu),teL,teA,w_norm])
+        res.append([lr,batch_size,momentum,H_mu,sqrt(V_mu),teL,teA,w_norm])
         if verbose:
             count = count + 1
             time_end = time.time()
-            print('%3d-th, %.0f s\t %.1e\t %4d | %.2e\t %.2e\t | %.1e\t %.2f\t %.2e'%(
-                count,time_end-time_start,lr,batch_size,H_mu,sqrt(V_mu),teL,teA,w_norm))
+            print('%3d-th, %.0f s\t %.1e\t %4d \t %.2f| %.2e\t %.2e\t | %.1e\t %.2f\t %.2e'%(
+                count,time_end-time_start,lr,batch_size,momentum,H_mu,sqrt(V_mu),teL,teA,w_norm))
     return res

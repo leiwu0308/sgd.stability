@@ -43,10 +43,10 @@ for lr,n_iters in zip(args.lr,args.n_iters):
 
         trDL,teDL = load_data(args,one_hot=one_hot)
         net = load_model(args.dataset,args.arch,width=args.width,depth=args.depth)
+        print(net)
         #net.apply(lambda t: weights_init(t,args.gain,args.init))
 
-        optimizer = torch.optim.SGD(net.parameters(),lr = lr)#, momentum=args.momentum,nesterov=True)
-        #optimizer = torch.optim.RMSprop(net.parameters(),lr = lr)
+        optimizer = torch.optim.SGD(net.parameters(),lr = lr, momentum = args.momentum)
         scheduler = lr_scheduler.MultiStepLR(optimizer,
                                 milestones = args.decay)
         trainer = Trainer(iter_display = args.iter_display)
@@ -66,6 +66,8 @@ for lr,n_iters in zip(args.lr,args.n_iters):
         print('\t train loss: %.2e, acc: %.2f'%(trL,trA))
         print('\t test loss: %.2e, acc: %.2f'%(teL,teA))
 
+
+        # Save model
         if not os.path.exists(args.save_dir):
             os.mkdir(args.save_dir)
         filename = os.path.join(args.save_dir,
@@ -73,7 +75,4 @@ for lr,n_iters in zip(args.lr,args.n_iters):
                                     args.dataset,teA, lr, args.batch_size,args.momentum,i+1)
                 )
         torch.save(net.state_dict(),filename)
-
-        if args.save_model != '':
-            torch.save(net.state_dict(), args.save_model)
         print('==== End of %d-th Experiment ==='%(i+1))
