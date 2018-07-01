@@ -13,6 +13,7 @@ python sample_net.py --arch vgg --lr 0.01 --tol 1e-4 \
          --dataset cifar10 \
          --num_clean_samples 1000 \
          --num_wrong_samples 0 \
+         --n_tries 4 \
          --n_iters 1000000 \
          --batch_size 10 \
          --tol 1e-4 \
