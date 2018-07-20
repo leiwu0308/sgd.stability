@@ -3,19 +3,25 @@ import pickle
 import argparse
 import json
 import math
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import numpy as np
 import matplotlib as mpl 
 
 mpl.use('Agg')
 mpl.rc('text',usetex=True)
-mpl.rcParams['legend.fontsize']=20
-mpl.rcParams['xtick.labelsize'] = 15
-mpl.rcParams['ytick.labelsize'] = 15
-mpl.rcParams['axes.labelsize'] = 20
-# mpl.rcParams['axes.labelsize'] = 20
+mpl.rcParams['legend.fontsize']=25
+mpl.rcParams['xtick.labelsize'] = 25
+mpl.rcParams['ytick.labelsize'] = 25
+mpl.rcParams['axes.labelsize'] = 30
 import matplotlib.pyplot as plt
 
+
+def list2dict(keys,values):
+    res = defaultdict(list)
+    for k,v in zip(keys,values):
+        res[k].append(v)
+    res = OrderedDict(res)
+    return res
 
 def read_data(filename,batch_size,lr=0.1):
     with open(filename,'rb') as f:
@@ -25,67 +31,76 @@ def read_data(filename,batch_size,lr=0.1):
     # extract data according to batch size
     idx = (data[:,0]==lr) & (data[:,1]==batch_size) & (data[:,2] <= 0.92)
     data = data[idx,:]
-    return data
+
+    momen = data[:,2]
+    sharpn = data[:,3]
+    noniform = data[:,4]
+
+    sharpn = list2dict(momen,sharpn)
+    noniform = list2dict(momen,noniform)
+
+    return sharpn, noniform
+
+def plot(data,label='',marker='o',linestyle='-',color=''):
+    x = list(data.keys())
+    y_mean,y_std = [],[]
+    for v in data.values():
+        # v = np.log10(v)
+        y_mean.append(np.mean(v))
+        y_std.append(np.std(v))
+
+    plt.errorbar(x, y_mean, yerr = y_std, linestyle=linestyle,marker=marker,
+            barsabove=True,capsize=11, markersize=12, lw=4,label=label)
 
 #------------------------------------
-data = read_data('data/fmnist_momentum.pkl', 10, 0.1)
-momentums_fmnist = data[:,2]
-sharpness_fmnist = data[:,3]
-nonuniformity_fmnist = data[:,4]
+x_ticks = [0,0.2,0.4,0.6,0.8,0.9]
 
-
-data = read_data('data/fmnist_momentum.pkl', 1000, 0.1)
-momentums_fmnist_GD = data[:,2]
-sharpness_fmnist_GD = data[:,3]
-nonuniformity_fmnist_GD = data[:,4]
-
-plt.figure()
-plt.plot(momentums_fmnist,nonuniformity_fmnist,'o',markersize=12,lw=5,label=r'FashionMNIST,SGD')
-plt.plot(momentums_fmnist_GD,nonuniformity_fmnist_GD,'*',markersize=12,lw=5,label=r'FashionMNIST,GD')
+sharpn_fmnist_SGD,noniform_fmnist_SGD = read_data('data/fmnist_momentum.pkl', 10, 0.1)
+sharpn_fmnist_GD,noniform_fmnist_GD = read_data('data/fmnist_momentum.pkl', 1000, 0.1)                         
+fig,ax = plt.subplots(1,1)
+plot(noniform_fmnist_SGD,label='SGD')
+plot(noniform_fmnist_GD,label='GD',marker='^',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Non-uniformity')
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_ticks)
 plt.legend()
 plt.savefig('figures/fmnist_momentum_nonuniformity.pdf',bbox_inches='tight')
 
-# # plt.subplot(122)
-plt.figure()
-plt.plot(momentums_fmnist,sharpness_fmnist,'o',lw=5,markersize=12,label=r'FashionMNIST, SGD')
-plt.plot(momentums_fmnist_GD,sharpness_fmnist_GD,'*',lw=5,markersize=12,label=r'FashionMNIST, GD')
+
+
+fig,ax = plt.subplots(1,1)
+plot(sharpn_fmnist_SGD,label='SGD')
+plot(sharpn_fmnist_GD,label='GD',marker='^',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Sharpness')
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_ticks)
 plt.legend()
-
 plt.savefig('figures/fmnist_momentum_sharpness.pdf',bbox_inches='tight')
 
 
 
 #------------------------------------
-data = read_data('data/cifar10_momentum.pkl', 10, 0.01)
-momentums_cifar = data[:,2]
-sharpness_cifar = data[:,3]
-nonuniformity_cifar = data[:,4]
+sharpn_cifar_SGD,noniform_cifar_SGD = read_data('data/cifar10_momentum.pkl', 10, 0.01)
+sharpn_cifar_GD, noniform_cifar_GD = read_data('data/cifar10_momentum.pkl', 1000, 0.01)
 
-data = read_data('data/cifar10_momentum.pkl', 1000, 0.01)
-momentums_cifar_GD = data[:,2]
-sharpness_cifar_GD = data[:,3]
-nonuniformity_cifar_GD = data[:,4]
-
-# plt.figure(figsize=(10,4))
-# plt.subplot(121)
-plt.figure()
-plt.plot(momentums_cifar,nonuniformity_cifar,'o',lw=5,markersize=12,label=r'CIFAR10,SGD')
-plt.plot(momentums_cifar_GD,nonuniformity_cifar_GD,'*',lw=5,markersize=12,label=r'CIFAR10,GD')
+fig,ax = plt.subplots(1,1)
+plot(noniform_cifar_SGD,label='SGD')
+plot(noniform_cifar_GD,label='GD',marker='^',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Non-uniformity')
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_ticks)
 plt.legend()
 plt.savefig('figures/cifar_momentum_nonuniformity.pdf',bbox_inches='tight')
 
-# plt.subplot(122)
-plt.figure()
-plt.plot(momentums_cifar,sharpness_cifar,'*',lw=5,markersize=12,label=r'CIFAR10, SGD')
-plt.plot(momentums_cifar_GD,sharpness_cifar_GD,'o',lw=5,markersize=12,label=r'CIFAR10, GD')
+fig,ax = plt.subplots(1,1)
+plot(sharpn_cifar_SGD,label='SGD')
+plot(sharpn_cifar_GD,label='GD',marker='^',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Sharpness')
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_ticks)
 plt.legend()
-
 plt.savefig('figures/cifar_momentum_sharpness.pdf',bbox_inches='tight')
