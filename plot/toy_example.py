@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt 
 import matplotlib as mpl 
-mpl.rc('text',usetex=True)
+# mpl.rc('text',usetex=True)
 mpl.rcParams['legend.fontsize']=15
 mpl.rcParams['xtick.labelsize'] = 20
 mpl.rcParams['ytick.labelsize'] = 20
@@ -36,7 +36,7 @@ def plot_toy_example():
     y = list(map(f, x))
     y1 = list(map(f1,x))
     y2 = list(map(f2,x))
-    plt.plot(x,y,lw=3,color='k',label=r'$f=(f_1+f_2)/2$')
+    plt.plot(x,y,lw=2,color='k',label=r'$f=(f_1+f_2)/2$')
     plt.plot(x,y1,lw=2,color='g',linestyle='--',label=r'$f_1$')
     plt.plot(x,y2,lw=2,color='b',linestyle='--',label=r'$f_2$')
     plt.xlim([-0.5,1.6])
@@ -80,8 +80,7 @@ def plot_diagram():
     batch_sizes = [1,2,3]
     learning_rates = [0.1,0.2,0.3]
 
-    plt.figure(figsize=(12,5))
-    ax = plt.subplot(1,2,1)
+    ax = plt.subplot(111)
     x = np.ones(100)*2/0.1
     y = np.linspace(0,4*np.sqrt(batch_sizes[-1])/0.1,100)
     plt.plot(x,y,'-k',lw=2)
@@ -108,8 +107,10 @@ def plot_diagram():
     # Only show ticks on the left and bottom spines
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
+    plt.savefig('figures/diagram_batchsize.pdf',bbox_inches='tight')
 
-    ax=plt.subplot(1,2,2)
+    plt.figure()
+    ax = plt.subplot(111)
     for lr in learning_rates:
         x = np.linspace(0,2/lr,100)
         y = np.ones(100)*1/lr
@@ -138,7 +139,8 @@ def plot_diagram():
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
 
-    plt.savefig('figures/diagram.pdf',bbox_inches='tight')
+    plt.savefig('figures/diagram_learningrate.pdf',bbox_inches='tight')
 
 if __name__ == '__main__':
-    plot_diagram()
+    # plot_diagram()
+    plot_toy_example()

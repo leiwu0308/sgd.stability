@@ -13,6 +13,7 @@ mpl.rcParams['legend.fontsize']=25
 mpl.rcParams['xtick.labelsize'] = 25
 mpl.rcParams['ytick.labelsize'] = 25
 mpl.rcParams['axes.labelsize'] = 30
+mpl.rcParams['axes.titlesize'] = 20
 import matplotlib.pyplot as plt
 
 
@@ -50,7 +51,7 @@ def plot(data,label='',marker='o',linestyle='-',color=''):
         y_std.append(np.std(v))
 
     plt.errorbar(x, y_mean, yerr = y_std, linestyle=linestyle,marker=marker,
-            barsabove=True,capsize=11, markersize=12, lw=4,label=label)
+            barsabove=True,capsize=10, markersize=8, capthick=2,lw=5,label=label)
 
 #------------------------------------
 x_ticks = [0,0.2,0.4,0.6,0.8,0.9]
@@ -59,9 +60,10 @@ sharpn_fmnist_SGD,noniform_fmnist_SGD = read_data('data/fmnist_momentum.pkl', 10
 sharpn_fmnist_GD,noniform_fmnist_GD = read_data('data/fmnist_momentum.pkl', 1000, 0.1)                         
 fig,ax = plt.subplots(1,1)
 plot(noniform_fmnist_SGD,label='SGD')
-plot(noniform_fmnist_GD,label='GD',marker='^',linestyle='--')
+plot(noniform_fmnist_GD,label='GD',marker='o',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Non-uniformity')
+plt.title('FashionMNIST')
 ax.set_xticks(x_ticks)
 ax.set_xticklabels(x_ticks)
 plt.legend()
@@ -71,9 +73,10 @@ plt.savefig('figures/fmnist_momentum_nonuniformity.pdf',bbox_inches='tight')
 
 fig,ax = plt.subplots(1,1)
 plot(sharpn_fmnist_SGD,label='SGD')
-plot(sharpn_fmnist_GD,label='GD',marker='^',linestyle='--')
+plot(sharpn_fmnist_GD,label='GD',marker='o',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Sharpness')
+plt.title('FashionMNIST')
 ax.set_xticks(x_ticks)
 ax.set_xticklabels(x_ticks)
 plt.legend()
@@ -87,9 +90,10 @@ sharpn_cifar_GD, noniform_cifar_GD = read_data('data/cifar10_momentum.pkl', 1000
 
 fig,ax = plt.subplots(1,1)
 plot(noniform_cifar_SGD,label='SGD')
-plot(noniform_cifar_GD,label='GD',marker='^',linestyle='--')
+plot(noniform_cifar_GD,label='GD',marker='o',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Non-uniformity')
+plt.title('CIFAR-10')
 ax.set_xticks(x_ticks)
 ax.set_xticklabels(x_ticks)
 plt.legend()
@@ -97,9 +101,10 @@ plt.savefig('figures/cifar_momentum_nonuniformity.pdf',bbox_inches='tight')
 
 fig,ax = plt.subplots(1,1)
 plot(sharpn_cifar_SGD,label='SGD')
-plot(sharpn_cifar_GD,label='GD',marker='^',linestyle='--')
+plot(sharpn_cifar_GD,label='GD',marker='o',linestyle='--')
 plt.xlabel('Momentum')
 plt.ylabel('Sharpness')
+plt.title('CIFAR-10')
 ax.set_xticks(x_ticks)
 ax.set_xticklabels(x_ticks)
 plt.legend()
