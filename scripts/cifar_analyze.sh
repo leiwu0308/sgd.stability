@@ -7,9 +7,11 @@
 #SBATCH --gres=gpu:1
 
 
-python analyze_net.py --model experiments/cifar10/ --save_res cifar10_momentum.pkl --nonuniformity \
+python analyze_net.py --model experiments/cifar10/scatter \
+             --save_res cifar10_resnet_scatter.pkl \
+             --nonuniformity \
              --dataset cifar10 \
              --num_clean_samples 1000 \
              --num_wrong_samples 0 \
              --nclasses 2 \
-             --arch vgg
+             --arch resnet

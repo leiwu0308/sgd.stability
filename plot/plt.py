@@ -17,7 +17,7 @@ import seaborn as sns
 
 
 
-data = 'data/fmnist/fmnist_uniformity_gd.pkl'
+data = 'data/fmnist/fmnist_sgd_batchsize.pkl'
 res = []
 with open(data,'rb') as f:
     data = pickle.load(f)
@@ -28,17 +28,17 @@ sharpness = data[:,2]
 diversity = data[:,3]
 test_acc = data[:,5]
 
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-plt.plot(test_acc,sharpness,'-o')
-plt.xlabel('Test Accuracy',fontsize=20)
-plt.ylabel('Sharpness',fontsize=20)
+# plt.figure(figsize=(10,4))
+# plt.subplot(1,2,1)
+# plt.plot(test_acc,sharpness,'o')
+# plt.xlabel('Test Accuracy',fontsize=20)
+# plt.ylabel('Sharpness',fontsize=20)
 
-plt.subplot(1,2,2)
-plt.plot(test_acc,diversity,'-*')
+# plt.subplot(1,2,2)
+plt.plot(diversity,test_acc,'*')
 plt.xlabel('Test Accuracy',fontsize=20)
 plt.ylabel('Non-uniformity',fontsize=20)
-plt.savefig('figures/fmnist_sharpness_nonuniformity_vs_testacc_GD.pdf',bbox_inches='tight')
+plt.savefig('figures/cifar10_scatter.png',bbox_inches='tight')
 
 
 

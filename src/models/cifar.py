@@ -14,62 +14,6 @@ def get_cifar_mean_std():
     return mean_var,std_var
 
 #====================================
-# FNN
-#====================================
-class FNN(nn.Module):
-    def __init__(self,W=500,D=3):
-        super(FNN,self).__init__()
-        fc = [nn.Linear(3*32*32,W)]
-        for i in range(D-1):
-            fc.append(nn.Linear(W,W))
-        fc.append(nn.Linear(W,10))
-        self.fc = nn.ModuleList(fc)
-        self.D = D
-        self.name = 'fnn'
-
-        self.mean_var, self.std_var = get_cifar_mean_std()
-
-    def forward(self,x):
-        x = (x-self.mean_var)/self.std_var
-        o = x.view(x.size(0),-1)
-        for i in range(self.D+1):
-            o = self.fc[i](o)
-            if i < self.D:
-                o = F.relu(o)
-        return o
-
-#====================================
-# LeNet
-#====================================
-class LeNet(nn.Module):
-    def __init__(self,num_classes=10):
-        super(LeNet,self).__init__()
-        self.conv1 = nn.Conv2d(3,16,5,stride=1) # 32-5+1=28
-        self.conv2 = nn.Conv2d(16,32,5,stride=1) # 14-5+1=10
-        self.conv3 = nn.Conv2d(32,128,5,stride=1) # 5-5+1 = 1
-        self.fc1 = nn.Linear(128,500)
-        self.fc2 = nn.Linear(500,num_classes)
-
-    def forward(self,x):
-        if x.ndimension()==3:
-            x = x.unsqueeze(0)
-        o = self.conv1(x)
-        o = F.relu(o)
-        o = F.avg_pool2d(o,2,2)
-
-        o = self.conv2(o)
-        o = F.relu(o)
-        o = F.avg_pool2d(o,2,2)
-
-        o = self.conv3(o)
-
-        o = o.view(o.shape[0],-1)
-        o = self.fc1(o)
-        o = F.relu(o)
-        o = self.fc2(o)
-        return o
-
-#====================================
 # ResNet
 #====================================
 def conv3x3(in_channels,out_channels,stride=1):
@@ -181,12 +125,6 @@ class ResNet(nn.Module):
 #====================================
 # API
 #====================================
-def fnn(width,depth):
-    return FNN(width,depth)
-
-def lenet(num_classes=10):
-    return LeNet(num_classes)
-
 def resnet(width=2,depth=14,num_classes=10):
     if (depth-2)%6 != 0:
         raise ValueError('depth: %d is not legal depth for resnet'%(depth))

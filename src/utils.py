@@ -7,7 +7,6 @@ import torch
 from torch.autograd import Variable
 
 from .models.cifar import resnet
-from .models.cifar import lenet as lenet_cifar
 from .models.vgg import vgg11, vgg11_big
 from .models.mnist import resfnn, lenet
 from .data import load_cifar,load_mnist
@@ -68,8 +67,6 @@ def load_model(dataset,arch=None,width=500,depth=2):
             return resnet(width=4,depth=8,num_classes=2).cuda()
         elif arch == 'vgg':
             return vgg11(num_classes=2).cuda()
-        elif arch == 'lenet':
-            return lenet_cifar(num_classes=2).cuda()
         elif arch == 'bigvgg':
             return vgg11_big().cuda()
         else:
@@ -153,10 +150,10 @@ def parse_args():
     }
 
     args_cifar10= {
-        'num_clean_samples': 50000,
+        'num_clean_samples': 1000,
         'num_wrong_samples': 0,
         'arch': 'resnet',
-        'load_size': 400
+        'load_size': 100
     }
 
     if args.dataset == 'fashionmnist':
